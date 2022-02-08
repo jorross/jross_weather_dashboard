@@ -26,25 +26,33 @@ var searchDiv = $('#searchDiv');
 var searchListDiv = $('#searchList');
 
 var index;
-if (localStorage.length > 0){
+if (localStorage.length > 0) {
     index = localStorage.length
+    $('#currentCity').text(localStorage.getItem(index - 1) + " (" + moment().format('M/D/YYYY') + ")")
 }
 else {
     index = 0;
+    // $('#currentCity').text(localStorage.getItem(index) + " (" + moment().format('M/D/YYYY') + ")")
 }
+
 
 
 loadHistory();
 
 searchDiv.on('click', '#searchBtn', function (event) {
-    localStorage.setItem(index, $('#cityInput').val())
+    if ($('#cityInput').val() != '') {
+        localStorage.setItem(index, $('#cityInput').val())
 
-    $('#currentCity').text(localStorage.getItem(index) + " (" + moment().format('M/D/YYYY') + ")");
+        $('#currentCity').text(localStorage.getItem(index) + " (" + moment().format('M/D/YYYY') + ")");
 
-    cleansePage();
-    loadHistory();
+        cleansePage();
+        loadHistory();
 
-    index++;
+        index++;
+    }
+    else {
+        console.log("Error: No input submitted");
+    }
 })
 
 function loadHistory() {
