@@ -39,6 +39,8 @@ else {
 
 loadHistory();
 
+populateCards();
+
 searchDiv.on('click', '#searchBtn', function (event) {
     if ($('#cityInput').val() != '') {
         localStorage.setItem(index, $('#cityInput').val())
@@ -65,6 +67,19 @@ function loadHistory() {
     }
     addClearButton();
 }
+
+function populateCards() {
+    for (var i=1; i<=5; i++) {
+        $("#cardTitle"+i).text(moment().add(i, "days").format('M/D/YYYY'));
+        $("#cardText"+i).append(
+            '<img src="..." alt="..." id="cardImg"'+i+'/>',
+            '<p class="card-text" id="temp"'+i+'>Temp: </p>',
+            '<p class="card-text" id="wind"'+i+'>Wind: </p>',
+            '<p class="card-text" id="humidity"'+i+'>Humidity: </p>'
+        );
+    }
+}
+
 function cleansePage() {
     $('#searchList').children().remove();
 }
