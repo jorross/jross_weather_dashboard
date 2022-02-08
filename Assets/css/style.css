@@ -1,0 +1,11 @@
+header h1 {
+    min-height: 100px;
+}
+
+#searchListDiv {
+    min-height: 600px;
+}
+
+#searchListDiv button {
+    min-width: 250px;
+}
