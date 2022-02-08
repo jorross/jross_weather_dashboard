@@ -36,3 +36,8 @@ header h1 {
 .card-text {
     font-size: 14px;
 }
+
+.bg-blue-gray {
+    background-color: #726cf8;
+    background-image: linear-gradient(315deg, #726cf8 0%, #e975a8 74%);;
+}
