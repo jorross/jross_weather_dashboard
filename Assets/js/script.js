@@ -6,20 +6,10 @@ AUTOFILL CITIES SEARCH
 - find 3rd party api to autofill cities
 - integrate into current input fields
 
-GETTING COORDINATES
----------------------
-- set up project on google api server
-- enable geocode api
-- set up variables for url path and api key and user params
-                                                 ^ -> capture user inputs and append to url string           
-- make api call to convert cities to geocodes
-
 GETTING WEATHER
 -------------------
-- get api key for weather api
-- create path variable including api key and lat/long found from the geocode api call
 - caputre response from fetch call and parse the necessary information (current conditions & 5 day forcast)
-- write the current conditions on to the html dashboard container
+- Style the index number
 - wrote the forcast for the next 5 days, one on each card
 */
 var searchDiv = $('#searchDiv');
@@ -43,7 +33,24 @@ if (localStorage.length > 0) {
     var geo_url = constructGeoUrl(localStorage.getItem(index - 1));
     callGeocodeApi(geo_url).then(function(result) {
         var weather_url = constructWeatherUrl(result.lat.toFixed(2), result.lng.toFixed(2));
-        callWeatherApi(weather_url);
+        callWeatherApi(weather_url).then(function(result) {
+            $('#currentCity').append(
+                '<img src="http://openweathermap.org/img/wn/' + result.current.icon + '.png" alt="Current Weather Type" id="dashIcon"/>',
+            );
+
+            $('#currentTemp').text("Temp: " + result.temp + "°F");
+            $('#currentWind').text("Wind: " + result.wind + " MPH");
+            $('#currentHumidity').text("Humidity: " + result.humidity + "%");
+            $('#currentUV').text("UV Index: " + result.uv_index);
+
+            // console.log(result.future)
+            for (var i=1; i<=5; i++) {
+                $('#cardImg'+i).attr("src", "http://openweathermap.org/img/wn/" + result.future[i].weather[0].icon + ".png");
+                $('#temp'+i).text("Temp: " + result.future[i].temp.max + "°F");
+                $('#wind'+i).text("Wind: " + result.future[i].temp.max + " MPH");
+                $('#humidity'+i).text("Humidity: " + result.future[i].temp.max + "%");
+            }
+        });
     });
 }
 else {
@@ -95,7 +102,7 @@ function constructGeoUrl(params) {
 
 function constructWeatherUrl(lat, long) {
 
-    weather_url_params = "?lat=" + lat + "&lon=" + long;
+    weather_url_params = "?lat=" + lat + "&lon=" + long + "&units=imperial";
 
     return weather_url_path + weather_url_params + weather_api_key;
 }
@@ -124,7 +131,14 @@ function callWeatherApi(requestUrl) {
         })
         .then(function (data) {
             console.log(data);
-            var payload = {}
+            var payload = {
+                "temp": data.current.temp,
+                "wind": data.current.wind_speed,
+                "humidity": data.current.humidity,
+                "uv_index": data.current.uvi,
+                "current": data.current.weather[0],
+                "future": data.daily
+            }
             return payload;
         });
 }
@@ -144,10 +158,10 @@ function populateCards() {
     for (var i = 1; i <= 5; i++) {
         $("#cardTitle" + i).text(moment().add(i, "days").format('M/D/YYYY'));
         $("#cardText" + i).append(
-            '<img src="" alt="" id="cardImg"' + i + '/>',
-            '<p class="card-text" id="temp"' + i + '>Temp: </p>',
-            '<p class="card-text" id="wind"' + i + '>Wind: </p>',
-            '<p class="card-text" id="humidity"' + i + '>Humidity: </p>'
+            '<img src="" alt="" id="cardImg' + i + '" />',
+            '<p class="card-text" id="temp'+ i + '">Temp: </p>',
+            '<p class="card-text" id="wind' + i + '">Wind: </p>',
+            '<p class="card-text" id="humidity' + i + '">Humidity: </p>'
         );
     }
 }
