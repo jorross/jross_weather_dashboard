@@ -15,9 +15,9 @@ GETTING WEATHER
 var searchDiv = $('#searchDiv');
 var searchListDiv = $('#searchList');
 
-var geo_url_path = "https://maps.googleapis.com/maps/api/geocode/json"
-var geo_url_params = "?address="
-var geo_api_key = "&key=AIzaSyCAhY-AP5wzYt1ngWZ86qHYzoUsYKnoQmE";
+var geo_url_path = "http://api.openweathermap.org/geo/1.0/direct"
+var geo_url_params;
+var geo_api_key = "&appid=a2b68520c77d3d2446b525144eb3bb43";
 
 var weather_url_path = "https://api.openweathermap.org/data/2.5/onecall"
 var weather_url_params;
@@ -31,9 +31,9 @@ if (localStorage.length > 0) {
     $('#currentCity').text(localStorage.getItem(index - 1) + " (" + moment().format('M/D/YYYY') + ")")
 
     var geo_url = constructGeoUrl(localStorage.getItem(index - 1));
-    callGeocodeApi(geo_url).then(function(result) {
+    callGeocodeApi(geo_url).then(function (result) {
         var weather_url = constructWeatherUrl(result.lat.toFixed(2), result.lng.toFixed(2));
-        callWeatherApi(weather_url).then(function(result) {
+        callWeatherApi(weather_url).then(function (result) {
             $('#currentCity').append(
                 '<img src="http://openweathermap.org/img/wn/' + result.current.icon + '.png" alt="Current Weather Type" id="dashIcon"/>',
             );
@@ -44,11 +44,11 @@ if (localStorage.length > 0) {
             $('#currentUV').text("UV Index: " + result.uv_index);
 
             // console.log(result.future)
-            for (var i=1; i<=5; i++) {
-                $('#cardImg'+i).attr("src", "http://openweathermap.org/img/wn/" + result.future[i].weather[0].icon + ".png");
-                $('#temp'+i).text("Temp: " + result.future[i].temp.max + "°F");
-                $('#wind'+i).text("Wind: " + result.future[i].temp.max + " MPH");
-                $('#humidity'+i).text("Humidity: " + result.future[i].temp.max + "%");
+            for (var i = 1; i <= 5; i++) {
+                $('#cardImg' + i).attr("src", "http://openweathermap.org/img/wn/" + result.future[i].weather[0].icon + ".png");
+                $('#temp' + i).text("Temp: " + result.future[i].temp.max + "°F");
+                $('#wind' + i).text("Wind: " + result.future[i].temp.max + " MPH");
+                $('#humidity' + i).text("Humidity: " + result.future[i].temp.max + "%");
             }
         });
     });
@@ -70,10 +70,27 @@ searchDiv.on('click', '#searchBtn', function (event) {
 
         $('#currentCity').text(localStorage.getItem(index) + " (" + moment().format('M/D/YYYY') + ")");
 
-        var geo_url = constructGeoUrl(localStorage.getItem(index - 1));
-        callGeocodeApi(geo_url).then(function(result) {
+        var geo_url = constructGeoUrl(localStorage.getItem(index));
+        callGeocodeApi(geo_url).then(function (result) {
             var weather_url = constructWeatherUrl(result.lat.toFixed(2), result.lng.toFixed(2));
-            callWeatherApi(weather_url);
+            callWeatherApi(weather_url).then(function (result) {
+                $('#currentCity').append(
+                    '<img src="http://openweathermap.org/img/wn/' + result.current.icon + '.png" alt="Current Weather Type" id="dashIcon"/>',
+                );
+
+                $('#currentTemp').text("Temp: " + result.temp + "°F");
+                $('#currentWind').text("Wind: " + result.wind + " MPH");
+                $('#currentHumidity').text("Humidity: " + result.humidity + "%");
+                $('#currentUV').text("UV Index: " + result.uv_index);
+
+                // console.log(result.future)
+                for (var i = 1; i <= 5; i++) {
+                    $('#cardImg' + i).attr("src", "http://openweathermap.org/img/wn/" + result.future[i].weather[0].icon + ".png");
+                    $('#temp' + i).text("Temp: " + result.future[i].temp.max + "°F");
+                    $('#wind' + i).text("Wind: " + result.future[i].temp.max + " MPH");
+                    $('#humidity' + i).text("Humidity: " + result.future[i].temp.max + "%");
+                }
+            });
         });
 
         cleansePage();
@@ -88,15 +105,25 @@ searchDiv.on('click', '#searchBtn', function (event) {
 
 function constructGeoUrl(params) {
     var user_input = params;
-    var inputSplit = user_input.split(" ");
-    for (var i = 0; i < inputSplit.length; i++) {
-        if (i < inputSplit.length - 1) {
-            geo_url_params += inputSplit[i] + "+";
-        }
-        else {
-            geo_url_params += inputSplit[i];
-        }
-    };
+    var inputSplit;
+    if (user_input.includes(" ")) {
+        inputSplit = user_input.split(" ");
+        for (var i = 0; i < inputSplit.length; i++) {
+            if (i === 0) {
+                geo_url_params = "?q=";
+            }
+            if (i < inputSplit.length - 1) {
+                geo_url_params += inputSplit[i] + "+";
+            }
+            else {
+                geo_url_params += inputSplit[i];
+            }
+        };
+    }
+    else {
+        geo_url_params = "?q=" + user_input;
+    }
+    
     return geo_url_path + geo_url_params + geo_api_key;
 }
 
@@ -113,8 +140,9 @@ function callGeocodeApi(requestUrl) {
             return response.json();
         })
         .then(function (data) {
-            lat = data.results[0].geometry.location.lat;
-            lng = data.results[0].geometry.location.lng;
+            // console.log(data);
+            lat = data[0].lat;
+            lng = data[0].lon;
             var payload = {
                 "lat": lat,
                 "lng": lng
@@ -126,11 +154,11 @@ function callGeocodeApi(requestUrl) {
 function callWeatherApi(requestUrl) {
     return fetch(requestUrl)
         .then(function (response) {
-            console.log(response);
+            // console.log(response);
             return response.json();
         })
         .then(function (data) {
-            console.log(data);
+            // console.log(data);
             var payload = {
                 "temp": data.current.temp,
                 "wind": data.current.wind_speed,
@@ -159,7 +187,7 @@ function populateCards() {
         $("#cardTitle" + i).text(moment().add(i, "days").format('M/D/YYYY'));
         $("#cardText" + i).append(
             '<img src="" alt="" id="cardImg' + i + '" />',
-            '<p class="card-text" id="temp'+ i + '">Temp: </p>',
+            '<p class="card-text" id="temp' + i + '">Temp: </p>',
             '<p class="card-text" id="wind' + i + '">Wind: </p>',
             '<p class="card-text" id="humidity' + i + '">Humidity: </p>'
         );
@@ -182,9 +210,26 @@ searchListDiv.on('click', '.btn-secondary', function (event) {
     $('#currentCity').text($(this).text() + " (" + moment().format('M/D/YYYY') + ")");
 
     var geo_url = constructGeoUrl($(this).text());
-    callGeocodeApi(geo_url).then(function(result) {
+    callGeocodeApi(geo_url).then(function (result) {
         var weather_url = constructWeatherUrl(result.lat.toFixed(2), result.lng.toFixed(2));
-        callWeatherApi(weather_url);
+        callWeatherApi(weather_url).then(function (result) {
+            $('#currentCity').append(
+                '<img src="http://openweathermap.org/img/wn/' + result.current.icon + '.png" alt="Current Weather Type" id="dashIcon"/>',
+            );
+
+            $('#currentTemp').text("Temp: " + result.temp + "°F");
+            $('#currentWind').text("Wind: " + result.wind + " MPH");
+            $('#currentHumidity').text("Humidity: " + result.humidity + "%");
+            $('#currentUV').text("UV Index: " + result.uv_index);
+
+            // console.log(result.future)
+            for (var i = 1; i <= 5; i++) {
+                $('#cardImg' + i).attr("src", "http://openweathermap.org/img/wn/" + result.future[i].weather[0].icon + ".png");
+                $('#temp' + i).text("Temp: " + result.future[i].temp.max + "°F");
+                $('#wind' + i).text("Wind: " + result.future[i].temp.max + " MPH");
+                $('#humidity' + i).text("Humidity: " + result.future[i].temp.max + "%");
+            }
+        });
     });
 })
 
