@@ -15,7 +15,7 @@ GETTING WEATHER
 var searchDiv = $('#searchDiv');
 var searchListDiv = $('#searchList');
 
-var geo_url_path = "http://api.openweathermap.org/geo/1.0/direct"
+var geo_url_path = "https://api.openweathermap.org/geo/1.0/direct"
 var geo_url_params;
 var geo_api_key = "&appid=a2b68520c77d3d2446b525144eb3bb43";
 
@@ -35,7 +35,7 @@ if (localStorage.length > 0) {
         var weather_url = constructWeatherUrl(result.lat.toFixed(2), result.lng.toFixed(2));
         callWeatherApi(weather_url).then(function (result) {
             $('#currentCity').append(
-                '<img src="http://openweathermap.org/img/wn/' + result.current.icon + '.png" alt="Current Weather Type" id="dashIcon"/>',
+                '<img src="https://openweathermap.org/img/wn/' + result.current.icon + '.png" alt="Current Weather Type" id="dashIcon"/>',
             );
 
             $('#currentTemp').text("Temp: " + result.temp + "°F");
@@ -45,7 +45,7 @@ if (localStorage.length > 0) {
 
             // console.log(result.future)
             for (var i = 1; i <= 5; i++) {
-                $('#cardImg' + i).attr("src", "http://openweathermap.org/img/wn/" + result.future[i].weather[0].icon + ".png");
+                $('#cardImg' + i).attr("src", "https://openweathermap.org/img/wn/" + result.future[i].weather[0].icon + ".png");
                 $('#temp' + i).text("Temp: " + result.future[i].temp.max + "°F");
                 $('#wind' + i).text("Wind: " + result.future[i].temp.max + " MPH");
                 $('#humidity' + i).text("Humidity: " + result.future[i].temp.max + "%");
@@ -75,7 +75,7 @@ searchDiv.on('click', '#searchBtn', function (event) {
             var weather_url = constructWeatherUrl(result.lat.toFixed(2), result.lng.toFixed(2));
             callWeatherApi(weather_url).then(function (result) {
                 $('#currentCity').append(
-                    '<img src="http://openweathermap.org/img/wn/' + result.current.icon + '.png" alt="Current Weather Type" id="dashIcon"/>',
+                    '<img src="https://openweathermap.org/img/wn/' + result.current.icon + '.png" alt="Current Weather Type" id="dashIcon"/>',
                 );
 
                 $('#currentTemp').text("Temp: " + result.temp + "°F");
@@ -85,7 +85,7 @@ searchDiv.on('click', '#searchBtn', function (event) {
 
                 // console.log(result.future)
                 for (var i = 1; i <= 5; i++) {
-                    $('#cardImg' + i).attr("src", "http://openweathermap.org/img/wn/" + result.future[i].weather[0].icon + ".png");
+                    $('#cardImg' + i).attr("src", "https://openweathermap.org/img/wn/" + result.future[i].weather[0].icon + ".png");
                     $('#temp' + i).text("Temp: " + result.future[i].temp.max + "°F");
                     $('#wind' + i).text("Wind: " + result.future[i].temp.max + " MPH");
                     $('#humidity' + i).text("Humidity: " + result.future[i].temp.max + "%");
@@ -214,7 +214,7 @@ searchListDiv.on('click', '.btn-secondary', function (event) {
         var weather_url = constructWeatherUrl(result.lat.toFixed(2), result.lng.toFixed(2));
         callWeatherApi(weather_url).then(function (result) {
             $('#currentCity').append(
-                '<img src="http://openweathermap.org/img/wn/' + result.current.icon + '.png" alt="Current Weather Type" id="dashIcon"/>',
+                '<img src="https://openweathermap.org/img/wn/' + result.current.icon + '.png" alt="Current Weather Type" id="dashIcon"/>',
             );
 
             $('#currentTemp').text("Temp: " + result.temp + "°F");
@@ -224,7 +224,7 @@ searchListDiv.on('click', '.btn-secondary', function (event) {
 
             // console.log(result.future)
             for (var i = 1; i <= 5; i++) {
-                $('#cardImg' + i).attr("src", "http://openweathermap.org/img/wn/" + result.future[i].weather[0].icon + ".png");
+                $('#cardImg' + i).attr("src", "https://openweathermap.org/img/wn/" + result.future[i].weather[0].icon + ".png");
                 $('#temp' + i).text("Temp: " + result.future[i].temp.max + "°F");
                 $('#wind' + i).text("Wind: " + result.future[i].temp.max + " MPH");
                 $('#humidity' + i).text("Humidity: " + result.future[i].temp.max + "%");
